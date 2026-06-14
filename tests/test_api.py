@@ -57,11 +57,15 @@ class _Capture:
 
 
 def test_error_surfaces_only_neutral_fields():
+    # The server's human title/message may carry server-side vocabulary; the
+    # client must surface ONLY neutral fields (code / trace_id / retriable) and
+    # never echo the human strings. Sentinels stand in for whatever the server
+    # sends, so this test never embeds real server vocabulary in client source.
     payload = {
         "error": {
             "code": "WMOS-TCM-0001",
-            "title": "Hexagram anchor failed",  # server vocabulary — must NOT leak
-            "message": "hexagram_id required (卦象优先硬规)",  # must NOT leak
+            "title": "SERVER_TITLE_SENTINEL",  # server vocabulary — must NOT leak
+            "message": "SERVER_MESSAGE_SENTINEL must not leak",  # must NOT leak
             "retriable": True,
             "trace_id": "abc123",
         }
@@ -72,9 +76,8 @@ def test_error_surfaces_only_neutral_fields():
     assert "abc123" in text
     assert "retriable" in text
     # neutrality: server human strings must not appear on the client surface
-    assert "Hexagram" not in text
-    assert "hexagram_id" not in text
-    assert "卦象" not in text
+    assert "SERVER_TITLE_SENTINEL" not in text
+    assert "SERVER_MESSAGE_SENTINEL" not in text
 
 
 def test_error_handles_malformed_envelope():
