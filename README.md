@@ -19,12 +19,23 @@ pip install genmount
 ## 🚀 Quickstart
 
 ```bash
-genmount doctor              # check Python, Ollama, config, device key
-genmount init --register     # one-time: register + activate this device
-genmount chat "What does the classical literature say about ..."   # local model
+pip install genmount
+genmount doctor                 # check Python, Ollama, config
+
+# Get a model (gated, free) from Hugging Face, then load it into Ollama:
+#   https://huggingface.co/doorm-ai/Llama-3.2-3B-genmount-tcm-GGUF
+ollama create genmount-tcm -f Modelfile   # FROM ./<file>.gguf; PARAMETER repeat_penalty 1.15
+
+genmount chat "What does the classical literature say about ..."   # runs 100% locally
 ```
 
-Registration is **free but logged** (an educational-use registry, Llama-gated style): it collects your name, organization, email, and intended use. Your device keypair is generated **locally** and never leaves your machine.
+**No account needed for local use** — `chat` runs entirely on your machine via Ollama. Registration is **only for cloud features** (model sync / cloud fallback — rolling out):
+
+```bash
+genmount init --register        # optional: collects name / org / email / intended use
+```
+
+Your device keypair is generated **locally** and never leaves your machine.
 
 ---
 

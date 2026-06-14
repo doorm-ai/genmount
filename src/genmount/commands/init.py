@@ -85,4 +85,14 @@ def run(
         except CloudUnavailableError as exc:
             typer.secho(f"(offline) {exc}", fg=typer.colors.YELLOW)
 
-    typer.echo("init complete. Run `genmount doctor` to verify.")
+    typer.echo("\ninit complete.")
+    typer.secho("Next:", fg=typer.colors.CYAN, bold=True)
+    typer.echo("  1. Get a model (gated, free) from Hugging Face, e.g.:")
+    typer.echo("       https://huggingface.co/doorm-ai/Llama-3.2-3B-genmount-tcm-GGUF")
+    typer.echo("       (also -ayurveda-GGUF / -tibetan-GGUF)")
+    typer.echo("     then load it into Ollama:")
+    typer.echo("       ollama create genmount-tcm -f Modelfile")
+    typer.echo("       # Modelfile: FROM ./<file>.gguf  +  PARAMETER repeat_penalty 1.15")
+    typer.echo("       (one-command `genmount sync` is coming)")
+    typer.echo("  2. Run it:        genmount chat \"...\"")
+    typer.echo("  3. Verify setup:  genmount doctor")

@@ -24,8 +24,11 @@ def run(
     ollama.require_up(cfg.ollama_host)
     if not ollama.has_model(cfg.ollama_host, cfg.model_tag):
         raise OllamaUnavailableError(
-            f"Local model '{cfg.model_tag}' is not present.\n"
-            f"  Pull it with:  ollama pull {cfg.model_tag}"
+            f"Local model '{cfg.model_tag}' is not present in Ollama.\n"
+            f"  Get one (gated, free) from Hugging Face, e.g.\n"
+            f"    https://huggingface.co/doorm-ai/Llama-3.2-3B-genmount-tcm-GGUF\n"
+            f"  then load it:  ollama create {cfg.model_tag} -f Modelfile   (FROM ./<file>.gguf)\n"
+            f"  (one-command `genmount sync` is coming)"
         )
 
     from ollama import Client
