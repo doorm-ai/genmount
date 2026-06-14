@@ -1,0 +1,39 @@
+name: Publish to PyPI
+
+# MANUAL ONLY — the owner triggers this via the "Run workflow" button.
+# It never runs automatically on push. (Releasing is a deliberate decision.)
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi              # protect with required reviewers in repo settings
+    permissions:
+      id-token: write              # OIDC for PyPI Trusted Publishing — NO stored token
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Preflight dual gate (GENMOUNT-CLIENT-SECURITY-PREFLIGHT §3) ---
+      - name: Secret scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --results=verified,unknown
+
+      - name: Public-term scan (denylist from governance, via secret)
+        run: |
+          printf '%s\n' "${{ secrets.GENMOUNT_TERM_DENYLIST }}" > .term-denylist
+          python scripts/check_public_terms.py --denylist .term-denylist --root src
+          rm -f .term-denylist
+
+      # --- Build + publish (no token; OIDC trusted publishing) ---
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build
+        run: |
+          python -m pip install build
+          python -m build
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

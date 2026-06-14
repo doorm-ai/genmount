@@ -1,0 +1,37 @@
+# Python build / cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Test / type caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Secrets — never commit (defense in depth; device keys live in user data dir, not here)
+*.env
+.env*
+*.key
+*.pem
+
+# Term-scan denylist is sourced from governance / CI secret — never committed here
+.term-denylist
+
+# AI 助手开发守则 — 内部文件,经主仓 _subrepo-files 多机同步,永不公开发布
+CLAUDE.md
