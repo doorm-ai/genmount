@@ -68,10 +68,7 @@ REPEAT_PENALTY = "1.15"
 
 
 def modelfile_text(gguf_filename: str) -> str:
-    return (
-        f"FROM ./{gguf_filename}\n"
-        f"PARAMETER repeat_penalty {REPEAT_PENALTY}\n"
-    )
+    return f"FROM ./{gguf_filename}\nPARAMETER repeat_penalty {REPEAT_PENALTY}\n"
 
 
 def install_gguf(host: str, model_name: str, gguf_path: Path) -> None:
@@ -86,6 +83,4 @@ def install_gguf(host: str, model_name: str, gguf_path: Path) -> None:
     )
     if proc.returncode != 0:
         detail = (proc.stderr or proc.stdout or "").strip()
-        raise OllamaUnavailableError(
-            f"`ollama create {model_name}` failed.\n{detail}"
-        )
+        raise OllamaUnavailableError(f"`ollama create {model_name}` failed.\n{detail}")

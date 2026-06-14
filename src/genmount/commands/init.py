@@ -18,13 +18,9 @@ def run(
         False, "--register", help="register online and receive an activation code"
     ),
     name: str = typer.Option(None, "--name", help="your name (registration)"),
-    organization: str = typer.Option(
-        None, "--org", help="your organization (registration)"
-    ),
+    organization: str = typer.Option(None, "--org", help="your organization (registration)"),
     email: str = typer.Option(None, "--email", help="contact email (registration)"),
-    use_case: str = typer.Option(
-        None, "--use-case", help="intended use (registration)"
-    ),
+    use_case: str = typer.Option(None, "--use-case", help="intended use (registration)"),
 ) -> None:
     if auth.device_key_exists() and not force:
         typer.echo("Device key already present (use --force to regenerate).")
@@ -59,9 +55,7 @@ def run(
             issued = result.get("activation_code")
             if isinstance(issued, str) and issued:
                 code = issued
-                typer.secho(
-                    "Registered — activation code issued.", fg=typer.colors.GREEN
-                )
+                typer.secho("Registered — activation code issued.", fg=typer.colors.GREEN)
             else:
                 typer.secho("Registration response had no code.", fg=typer.colors.RED)
         except CloudUnavailableError as exc:
@@ -94,5 +88,5 @@ def run(
     typer.echo("       ollama create genmount-tcm -f Modelfile")
     typer.echo("       # Modelfile: FROM ./<file>.gguf  +  PARAMETER repeat_penalty 1.15")
     typer.echo("       (one-command `genmount sync` is coming)")
-    typer.echo("  2. Run it:        genmount chat \"...\"")
+    typer.echo('  2. Run it:        genmount chat "..."')
     typer.echo("  3. Verify setup:  genmount doctor")

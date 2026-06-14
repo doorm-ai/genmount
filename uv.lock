@@ -370,7 +370,7 @@ wheels = [
 
 [[package]]
 name = "genmount"
-version = "0.1.0.dev0"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "cryptography" },

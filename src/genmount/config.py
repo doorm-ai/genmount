@@ -50,7 +50,6 @@ def config_path() -> Path:
 
 @dataclass
 class Config:
-
     cloud_endpoint: str = DEFAULT_CLOUD_ENDPOINT
     ollama_host: str = DEFAULT_OLLAMA_HOST
     model_tag: str = DEFAULT_MODEL_TAG
@@ -99,7 +98,6 @@ def token_store_path() -> Path:
 
 @dataclass
 class TokenStore:
-
     jwt: str | None = None
     refresh_token: str | None = None
 

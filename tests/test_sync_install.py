@@ -21,9 +21,7 @@ _SHA = hashlib.sha256(_PAYLOAD).hexdigest()
 
 
 def _stream_patch(monkeypatch, status=200, payload=_PAYLOAD):
-    transport = httpx.MockTransport(
-        lambda request: httpx.Response(status, content=payload)
-    )
+    transport = httpx.MockTransport(lambda request: httpx.Response(status, content=payload))
     real_stream = httpx.stream
 
     def fake_stream(method, url, **kw):
@@ -86,9 +84,7 @@ def test_sync_end_to_end_flow(tmp_path, monkeypatch):
             },
         ]
     }
-    monkeypatch.setattr(
-        "genmount.api.CloudClient.list_models", lambda self: entries
-    )
+    monkeypatch.setattr("genmount.api.CloudClient.list_models", lambda self: entries)
     _stream_patch(monkeypatch)
     installed: list[tuple[str, str]] = []
     monkeypatch.setattr(
@@ -99,9 +95,7 @@ def test_sync_end_to_end_flow(tmp_path, monkeypatch):
 
     result = runner.invoke(app, ["sync", "--use"])
     assert result.exit_code == 0, result.output
-    assert installed == [
-        ("genmount-v1-aaaabbbb-00000000", "v1-aaaabbbb-00000000.gguf")
-    ]
+    assert installed == [("genmount-v1-aaaabbbb-00000000", "v1-aaaabbbb-00000000.gguf")]
     assert "sha256 verified" in result.output
     assert "not a diagnosis" in result.output
 
@@ -116,9 +110,7 @@ def test_sync_end_to_end_flow(tmp_path, monkeypatch):
 def test_sync_no_entries_message(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "config_dir", lambda: tmp_path / "cfg")
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
-    monkeypatch.setattr(
-        "genmount.api.CloudClient.list_models", lambda self: {"entries": []}
-    )
+    monkeypatch.setattr("genmount.api.CloudClient.list_models", lambda self: {"entries": []})
     result = runner.invoke(app, ["sync"])
     assert result.exit_code == 0
     assert "No downloadable models" in result.output
@@ -174,8 +166,18 @@ def test_init_register_declined_license_aborts(tmp_path, monkeypatch):
     )
     result = runner.invoke(
         app,
-        ["init", "--register", "--name", "T", "--org", "O",
-         "--email", "t@e.com", "--use-case", "edu"],
+        [
+            "init",
+            "--register",
+            "--name",
+            "T",
+            "--org",
+            "O",
+            "--email",
+            "t@e.com",
+            "--use-case",
+            "edu",
+        ],
         input="n\n",
     )
     assert result.exit_code == 1

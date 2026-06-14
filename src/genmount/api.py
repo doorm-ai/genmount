@@ -144,18 +144,14 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def download_model(
-    url: str, dest: Path, expected_sha256: str, *, timeout: float = 600.0
-) -> Path:
+def download_model(url: str, dest: Path, expected_sha256: str, *, timeout: float = 600.0) -> Path:
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_suffix(dest.suffix + ".part")
     digest = hashlib.sha256()
     try:
         with httpx.stream("GET", url, timeout=timeout, follow_redirects=True) as resp:
             if resp.status_code >= 400:
-                raise CloudUnavailableError(
-                    f"Model download failed (HTTP {resp.status_code})."
-                )
+                raise CloudUnavailableError(f"Model download failed (HTTP {resp.status_code}).")
             with open(tmp, "wb") as fh:
                 for chunk in resp.iter_bytes():
                     fh.write(chunk)
@@ -165,8 +161,6 @@ def download_model(
         raise CloudUnavailableError("Model download interrupted.") from None
     if digest.hexdigest() != expected_sha256.lower():
         tmp.unlink(missing_ok=True)
-        raise IntegrityError(
-            "Downloaded file failed sha256 verification and was discarded."
-        )
+        raise IntegrityError("Downloaded file failed sha256 verification and was discarded.")
     tmp.replace(dest)
     return dest
