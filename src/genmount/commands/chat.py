@@ -9,6 +9,7 @@ from genmount import ollama
 from genmount.api import CloudClient
 from genmount.config import Config
 from genmount.errors import OllamaUnavailableError
+from genmount.sanitize import clean_output
 
 
 def run(
@@ -37,7 +38,7 @@ def run(
         model=cfg.model_tag,
         messages=[{"role": "user", "content": prompt}],
     )
-    typer.echo(resp.message.content)
+    typer.echo(clean_output(resp.message.content or ""))
     typer.secho(
         "\n(Educational / reference only — not a diagnosis or prescription.)",
         fg=typer.colors.BRIGHT_BLACK,
