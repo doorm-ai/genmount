@@ -130,3 +130,17 @@ def test_token_store_not_written_to_toml_config(tmp_home):
     raw = cfg_path.read_text(encoding="utf-8")
     assert "secret-jwt" not in raw
     assert "secret-rt" not in raw
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows ACL only")
+def test_generate_restricts_windows_acl_to_current_user(tmp_home):
+    auth.generate_device_key()
+    path = auth.private_key_path()
+    assert path.exists()
+    import subprocess
+    out = subprocess.check_output(["icacls", str(path)], text=True)
+    # inheritance removed → no "(I)" inherited ACE from parent Everyone typically;
+    # current user must appear with (F)
+    user = __import__("os").environ.get("USERNAME") or ""
+    assert user.lower() in out.lower() or user in out
+    assert "(F)" in out

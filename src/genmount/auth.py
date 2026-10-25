@@ -35,6 +35,21 @@ def device_key_exists() -> bool:
     return private_key_path().exists()
 
 
+
+def _restrict_windows_acl(path: Path) -> None:
+    """Restrict the device-key file ACL to the current user (no inherited Everyone)."""
+    import subprocess
+
+    user = os.environ.get("USERNAME") or os.getlogin()
+    # Disable inheritance, grant only current user Full control.
+    subprocess.run(
+        ["icacls", str(path), "/inheritance:r", f"/grant:r", f"{user}:F"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+
 def generate_device_key(*, overwrite: bool = False) -> bytes:
     path = private_key_path()
     if path.exists() and not overwrite:
@@ -44,6 +59,7 @@ def generate_device_key(*, overwrite: bool = False) -> bytes:
     priv_raw = priv.private_bytes_raw()
     pub_raw = priv.public_key().public_bytes_raw()
 
+    path.parent.mkdir(parents=True, exist_ok=True)
     if sys.platform != "win32":
         fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
         try:
@@ -53,6 +69,7 @@ def generate_device_key(*, overwrite: bool = False) -> bytes:
         path.chmod(0o600)
     else:
         path.write_bytes(priv_raw)
+        _restrict_windows_acl(path)
 
     return pub_raw
 

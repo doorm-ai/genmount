@@ -10,7 +10,7 @@ its single source. Supply it at scan time via:
   GENMOUNT_TERM_DENYLIST=PATH python scripts/check_public_terms.py
 
 Denylist file format: one term per line; blank lines and `#` comments ignored.
-If no denylist is supplied the scan is SKIPPED with a warning — CI must wire it
+If no denylist is supplied the scan **fails closed** (exit 2). CI must wire it
 (e.g. write a repository secret to a file, then pass --denylist).
 
 This script ships only the *mechanism*; it embeds no forbidden words, so the
@@ -40,13 +40,19 @@ def main() -> int:
     ap.add_argument("--root", default="src", help="directory to scan")
     args = ap.parse_args()
 
-    if not args.denylist or not Path(args.denylist).exists():
+    if not args.denylist:
         print(
-            "[term-scan] no denylist supplied (--denylist / GENMOUNT_TERM_DENYLIST) — "
-            "skipping. CI must wire the governance denylist before release.",
+            "[term-scan] FAIL: no denylist supplied (--denylist / GENMOUNT_TERM_DENYLIST). "
+            "Refusing to pass open. CI must wire the governance denylist.",
             file=sys.stderr,
         )
-        return 0
+        return 2
+    if not Path(args.denylist).exists():
+        print(
+            f"[term-scan] FAIL: denylist path does not exist: {args.denylist}",
+            file=sys.stderr,
+        )
+        return 2
 
     terms = load_denylist(args.denylist)
     hits: list[tuple[str, str]] = []
