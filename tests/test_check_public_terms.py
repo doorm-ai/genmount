@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""check_public_terms must fail closed without a denylist (L149)."""
+"""check_public_terms must fail closed without a denylist or with an empty one (L149)."""
 from __future__ import annotations
 
 import runpy
@@ -24,7 +24,7 @@ def test_no_denylist_exits_nonzero(monkeypatch, capsys):
     assert rc == 2
 
 
-def test_with_empty_denylist_file_passes(tmp_path, monkeypatch):
+def test_with_empty_denylist_file_fails_closed(tmp_path, monkeypatch):
     d = tmp_path / "deny.txt"
     d.write_text("# no terms\n", encoding="utf-8")
     monkeypatch.setattr(
@@ -38,4 +38,4 @@ def test_with_empty_denylist_file_passes(tmp_path, monkeypatch):
     # root relative to cwd — run from package root
     monkeypatch.chdir(Path(__file__).resolve().parents[1])
     rc = mod.main()
-    assert rc == 0
+    assert rc == 2

@@ -10,7 +10,7 @@ its single source. Supply it at scan time via:
   GENMOUNT_TERM_DENYLIST=PATH python scripts/check_public_terms.py
 
 Denylist file format: one term per line; blank lines and `#` comments ignored.
-If no denylist is supplied the scan **fails closed** (exit 2). CI must wire it
+If no denylist is supplied, or the file yields 0 terms, the scan **fails closed** (exit 2). CI must wire it
 (e.g. write a repository secret to a file, then pass --denylist).
 
 This script ships only the *mechanism*; it embeds no forbidden words, so the
@@ -55,6 +55,13 @@ def main() -> int:
         return 2
 
     terms = load_denylist(args.denylist)
+    if not terms:
+        print(
+            "[term-scan] FAIL: denylist is empty (0 terms). "
+            "Refusing to pass open ? CI secret missing/blank would otherwise fail open.",
+            file=sys.stderr,
+        )
+        return 2
     hits: list[tuple[str, str]] = []
     for p in Path(args.root).rglob("*.py"):
         text = p.read_text(encoding="utf-8", errors="ignore")
