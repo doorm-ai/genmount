@@ -58,7 +58,7 @@ def main() -> int:
     if not terms:
         print(
             "[term-scan] FAIL: denylist is empty (0 terms). "
-            "Refusing to pass open ? CI secret missing/blank would otherwise fail open.",
+            "Refusing to pass open — CI secret missing/blank would otherwise fail open.",
             file=sys.stderr,
         )
         return 2
